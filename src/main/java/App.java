@@ -19,7 +19,7 @@ public class App {
         System.out.println("All Shippers");
         printShippers(dataManager.getAllShippers());
 
-        System.out.println("Enter shipper ID to update phone: ");
+        System.out.println("Enter shipper ID (that you want to update the phone number of): ");
         int updateId = Integer.parseInt(myScanner.nextLine());
         System.out.println("Enter new phone: ");
         String newPhone = myScanner.nextLine();

@@ -10,7 +10,13 @@ public class Shipper {
         this.phone = phone;
     }
 
-    public int getShipperId() { return shipperId; }
-    public String getName()     { return name; }
-    public String getPhone()    { return phone; }
+    public int getShipperId(){
+        return shipperId;
+    }
+    public String getName(){
+        return name;
+    }
+    public String getPhone(){
+        return phone;
+    }
 }

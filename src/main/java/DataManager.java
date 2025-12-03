@@ -15,18 +15,20 @@ public class DataManager {
 
     public int insertShipper(String name, String phone) {
         BasicDataSource dataSource = createDataSource();
-        String sql = "INSERT INTO shippers (CompanyName, Phone) VALUES (?, ?)";
+        String query = "INSERT INTO shippers (CompanyName, Phone) VALUES (?, ?)";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
 
-            ps.setString(1, name);
-            ps.setString(2, phone);
-            ps.executeUpdate();
+            preparedStatement.setString(1, name); // fills in the first ?
+            preparedStatement.setString(2, phone); // fills in the second
+            preparedStatement.executeUpdate();
 
-            try (ResultSet keys = ps.getGeneratedKeys()) {
+            // Get the result containing primary keys (like I saw in workbook)
+            try (ResultSet keys = preparedStatement.getGeneratedKeys()) {
+                // Iterate through the primary keys that were generated
                 if (keys.next()) {
-                    return keys.getInt(1);
+                    return keys.getInt(1); // returns the auto increment ID of the shipper I added
                 }
             }
         } catch (SQLException e) {
@@ -37,17 +39,17 @@ public class DataManager {
 
     public ArrayList<Shipper> getAllShippers() {
         BasicDataSource dataSource = createDataSource();
-        String sql = "SELECT ShipperID, CompanyName, Phone FROM shippers ORDER BY ShipperID";
+        String query = "SELECT ShipperID, CompanyName, Phone FROM shippers ORDER BY ShipperID";
         ArrayList<Shipper> list = new ArrayList<>();
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
-            while (rs.next()) {
-                int id = rs.getInt("ShipperID");
-                String name = rs.getString("CompanyName");
-                String phone = rs.getString("Phone");
+            while (resultSet.next()) {
+                int id = resultSet.getInt("ShipperID");
+                String name = resultSet.getString("CompanyName");
+                String phone = resultSet.getString("Phone");
                 list.add(new Shipper(id, name, phone));
             }
         } catch (SQLException e) {
@@ -58,14 +60,14 @@ public class DataManager {
 
     public void updateShipperPhone(int shipperId, String newPhone) {
         BasicDataSource dataSource = createDataSource();
-        String sql = "UPDATE shippers SET Phone = ? WHERE ShipperID = ?";
+        String query = "UPDATE shippers SET Phone = ? WHERE ShipperID = ?";
 
         try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = conn.prepareStatement(query)) {
 
-            ps.setString(1, newPhone);
-            ps.setInt(2, shipperId);
-            ps.executeUpdate();
+            preparedStatement.setString(1, newPhone);
+            preparedStatement.setInt(2, shipperId);
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println("Error updating phone: " + e.getMessage());
@@ -74,13 +76,13 @@ public class DataManager {
 
     public void deleteShipper(int shipperId) {
         BasicDataSource dataSource = createDataSource();
-        String sql = "DELETE FROM shippers WHERE ShipperID = ?";
+        String query = "DELETE FROM shippers WHERE ShipperID = ?";
 
-        try (Connection conn = dataSource.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection connection = dataSource.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            ps.setInt(1, shipperId);
-            ps.executeUpdate();
+            preparedStatement.setInt(1, shipperId);
+            preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
             System.out.println("Error deleting shipper: " + e.getMessage());
